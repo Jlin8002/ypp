@@ -1,24 +1,26 @@
-def query(self, catalog="SDSS", threshold=20, display=True):
+import numpy as np
+from astroquery.sdss import SDSS
+from astroquery.gaia import Gaia
 
-    ra_bounds = []
-    dec_bounds = []
-    for bound in self.wcs_bounds:
-        ra_bounds.append(bound[0])
-        dec_bounds.append(bound[1])
+
+def get_plate_bounds(data, wcs):
+    coord_bounds = [
+        (0, 0),
+        (len(data[0]), 0),
+        (0, len(data)),
+        (len(data[0]), len(data)),
+    ]
+    wcs_bounds = wcs.all_pix2world(np.asarray(coord_bounds), 1)
+    ra_bounds = (np.amin(wcs_bounds[:, 0]), np.amax(wcs_bounds[:, 0]))
+    dec_bounds = (np.amin(wcs_bounds[:, 1]), np.amax(wcs_bounds[:, 1]))
+    return ra_bounds, dec_bounds
+
+
+def query(catalog="SDSS", threshold=20, display=True):
     if catalog == "SDSS":
-        self.catalog = Table.from_pandas(pandas_table)
-        self.catalog.sort("g")
-        print("SDSS stars found: " + str(len(self.catalog)))
+        pass
     elif catalog == "gaia":
-        self.catalog = gaia_query(
-            np.amin(ra_bounds),
-            np.amax(ra_bounds),
-            np.amin(dec_bounds),
-            np.amax(dec_bounds),
-            threshold=threshold,
-        )
-        self.catalog.sort("phot_bp_mean_mag")
-        print("Gaia stars found: " + str(len(self.catalog)))
+        pass
 
 
 def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
@@ -28,9 +30,9 @@ def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
         + ","
         + str((dec_0 + dec_1) / 2)
         + ","
-        + str(np.absolute(ra_1 - ra_0))
+        + str(abs(ra_1 - ra_0))
         + ","
-        + str(np.absolute(dec_1 - dec_0))
+        + str(abs(dec_1 - dec_0))
         + "))=1    AND  (phot_bp_mean_mag<= "
         + str(threshold)
         + ")"
@@ -39,19 +41,20 @@ def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
     return job.get_results()
 
 
-def SDSS_query(ra_0, ra_1, dec_0, dec_1, threshold=20, num_stars=20000):
+def SDSS_query(ra_bounds, dec_bounds, threshold=20, num_stars=20000):
     jobquery = (
         "SELECT TOP "
         + str(num_stars)
         + " p.objid,p.ra,p.dec,p.u,p.g,p.r,p.i,p.z,p.type,p.clean,pm.pmra,pm.pmdec FROM PhotoObj AS p JOIN propermotions pm ON p.objid = pm.objid WHERE p.ra BETWEEN "
-        + str(ra_0)
+        + str(ra_bounds[0])
         + " AND "
-        + str(ra_1)
+        + str(ra_bounds[1])
         + " AND p.dec BETWEEN "
-        + str(dec_0)
+        + str(dec_bounds[0])
         + " AND "
-        + str(dec_1)
+        + str(dec_bounds[1])
         + " AND p.g < "
         + str(threshold)
     )
-    return CasJobs.executeQuery(sql=jobquery, context="DR15")
+    res = SDSS.query_sql(jobquery, data_release=15)
+    return res
