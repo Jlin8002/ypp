@@ -41,7 +41,9 @@ def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
     return job.get_results()
 
 
-def SDSS_query(ra_bounds, dec_bounds, threshold=20, num_stars=20000):
+def SDSS_query(
+    ra_bounds, dec_bounds, clean=False, threshold=20, num_stars=20000, data_release=15
+):
     jobquery = (
         "SELECT TOP "
         + str(num_stars)
@@ -56,5 +58,8 @@ def SDSS_query(ra_bounds, dec_bounds, threshold=20, num_stars=20000):
         + " AND p.g < "
         + str(threshold)
     )
-    res = SDSS.query_sql(jobquery, data_release=15)
+    if clean:
+        # recommend applying cut after matching to avoid mismatches
+        jobquery = jobquery + " AND p.clean = 1"
+    res = SDSS.query_sql(jobquery, data_release=data_release)
     return res

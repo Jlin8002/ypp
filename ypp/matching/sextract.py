@@ -23,7 +23,8 @@ def sextract_objects(data: np.ndarray, sigma: float, bkg=None):
 
 def pix_to_wcs(objects, wcs: WCS):
     pix_locs = np.array([objects["x"], objects["y"]]).T
-    object_coords = wcs.pixel_to_world_values(pix_locs)
+    # object_coords = wcs.pixel_to_world_values(pix_locs)
+    object_coords = wcs.all_pix2world(pix_locs, 0)
     return SkyCoord(object_coords, unit=u.deg, frame="icrs")
 
 
