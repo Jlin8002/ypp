@@ -1,22 +1,27 @@
 import numpy as np
 from astroquery.sdss import SDSS
 from astroquery.gaia import Gaia
+from astropy.wcs import WCS
+from astropy.table import Table, QTable
+from astropy import units as u
+
+from typing import Union
 
 
-def get_plate_bounds(data, wcs):
+def get_plate_bounds(data: np.ndarray, wcs: WCS) -> tuple:
     coord_bounds = [
         (0, 0),
         (len(data[0]), 0),
         (0, len(data)),
         (len(data[0]), len(data)),
     ]
-    wcs_bounds = wcs.all_pix2world(np.asarray(coord_bounds), 1)
+    wcs_bounds = np.array(wcs.all_pix2world(np.array(coord_bounds), 1))
     ra_bounds = (np.amin(wcs_bounds[:, 0]), np.amax(wcs_bounds[:, 0]))
     dec_bounds = (np.amin(wcs_bounds[:, 1]), np.amax(wcs_bounds[:, 1]))
     return ra_bounds, dec_bounds
 
 
-def query(catalog="SDSS", threshold=20, display=True):
+def query(catalog: str = "SDSS", threshold: float = 20, display: bool = True):
     if catalog == "SDSS":
         pass
     elif catalog == "gaia":
@@ -42,7 +47,12 @@ def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
 
 
 def SDSS_query(
-    ra_bounds, dec_bounds, clean=False, threshold=20, num_stars=20000, data_release=15
+    ra_bounds: tuple[float, float],
+    dec_bounds: tuple[float, float],
+    clean: bool = False,
+    threshold: float = 20,
+    num_stars: int = 20000,
+    data_release: int = 15,
 ):
     jobquery = (
         "SELECT TOP "
@@ -63,3 +73,34 @@ def SDSS_query(
         jobquery = jobquery + " AND p.clean = 1"
     res = SDSS.query_sql(jobquery, data_release=data_release)
     return res
+
+
+column_unit_map_SDSS = {
+    "ra": u.deg,
+    "dec": u.deg,
+    "pmra": u.mas / u.yr,
+    "pmdec": u.mas / u.yr,
+}
+
+
+def add_units(table: Union[Table, QTable], unit_mapping: dict):
+    if isinstance(table, Table):
+        return add_units_Table(table, unit_mapping)
+    elif isinstance(table, QTable):
+        return add_units_QTable(table, unit_mapping)
+    else:
+        return add_units_Table(Table(table), unit_mapping)
+
+
+def add_units_Table(table: Table, unit_mapping: dict):
+    for col in unit_mapping:
+        try:
+            table[col] = table[col] * unit_mapping[col]
+        except:
+            raise "No column with name %s exists in the table." % col
+    return table
+
+
+def add_units_QTable(table: QTable, unit_mapping: dict):
+    for col in unit_mapping:
+        

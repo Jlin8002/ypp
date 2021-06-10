@@ -1,3 +1,7 @@
+import numpy as np
+from scipy.spatial import distance as dt
+
+
 def quick_match(sextracted_coords, catalog_coords, bin_size, tolerance):
     """
     quick_match: implementation of TOPCAT matching (bin-based approach)
