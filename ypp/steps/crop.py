@@ -8,9 +8,10 @@ from ypp.pipeline.step import PipeStep
 
 
 class CropStep(PipeStep):
-    def __init__(self, directory=None):
+    def __init__(self, directory=None, config=None, name=None, verbose=False):
         super().__init__(directory=directory)
-        super().set_input_exts("fits", "crop")
+        super().set_input_exts("fits", None)
+        super().set_output_exts("fits", "crop")
 
 
 def invert(data: np.ndarray) -> np.ndarray:

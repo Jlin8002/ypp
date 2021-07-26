@@ -1,3 +1,4 @@
+from astropy.table.groups import TableGroups
 import numpy as np
 from astroquery.sdss import SDSS
 from astroquery.gaia import Gaia
@@ -5,10 +6,12 @@ from astropy.wcs import WCS
 from astropy.table import Table, QTable
 from astropy import units as u
 
-from typing import Union
+from typing import Union, Tuple
 
 
-def get_plate_bounds(data: np.ndarray, wcs: WCS) -> tuple:
+def get_plate_bounds(
+    data: np.ndarray, wcs: WCS
+) -> Tuple[Tuple[float, float], Tuple[float, float]]:
     coord_bounds = [
         (0, 0),
         (len(data[0]), 0),
@@ -47,8 +50,8 @@ def gaia_query(ra_0, ra_1, dec_0, dec_1, threshold=20):
 
 
 def SDSS_query(
-    ra_bounds: tuple[float, float],
-    dec_bounds: tuple[float, float],
+    ra_bounds: Tuple[float, float],
+    dec_bounds: Tuple[float, float],
     clean: bool = False,
     threshold: float = 20,
     num_stars: int = 20000,
@@ -93,6 +96,7 @@ def add_units(table: Union[Table, QTable], unit_mapping: dict):
 
 
 def add_units_Table(table: Table, unit_mapping: dict):
+    table = QTable(table)
     for col in unit_mapping:
         try:
             table[col] = table[col] * unit_mapping[col]
@@ -103,4 +107,5 @@ def add_units_Table(table: Table, unit_mapping: dict):
 
 def add_units_QTable(table: QTable, unit_mapping: dict):
     for col in unit_mapping:
-        
+        if not table[col].quantity:
+            table[col] = table[col] * unit_mapping[col]

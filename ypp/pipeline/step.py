@@ -1,4 +1,8 @@
 class PipeStep(object):
+    """
+    A base pipestep class that can be inherited from.
+    """
+
     def __init__(self, directory=None):
         self.directory = directory
         self.input_file_ext = None
@@ -21,21 +25,21 @@ class PipeStep(object):
 
     def read_data(self):
         if self.input_file_ext == "fits" or self.input_file_ext == "fit":
-            pass
+            self.read_fits_file()
         elif self.input_file_ext == "tif" or self.input_file_ext == "tiff":
-            pass
+            self.read_tiff_file()
         elif self.input_file_ext == "csv":
-            pass
+            self.read_csv_file()
         else:
             raise "Unrecognized file extension."
 
     def write_data(self):
         if self.output_file_ext == "fits" or self.output_file_ext == "fit":
-            pass
+            self.write_fits_file()
         elif self.output_file_ext == "tif" or self.output_file_ext == "tiff":
-            pass
+            self.write_tiff_file()
         elif self.output_file_ext == "csv":
-            pass
+            self.write_csv_file()
         else:
             raise "Unrecognized file extension."
 
