@@ -1,5 +1,8 @@
+import json
+
+
 class Pipeline(object):
-    def __init__(self, directory=None):
+    def __init__(self, directory=None, config=None):
         self.directory = directory
         self.steps = []
         self.files = []

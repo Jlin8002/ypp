@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 def gaussian_box(image, coords, xrad, yrad):
     return fitgaussian(crop_box(image, coords, xrad, yrad), 0, False)
 
