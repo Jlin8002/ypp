@@ -8,8 +8,29 @@ from ypp.pipeline.step import Step
 
 
 class CropStep(Step):
+    """A pipeline step used to crop and invert an image before processing.
+
+    Config parameters:
+    ----------
+    name : str
+        The name of the step to be used in the config file.
+    interactive : bool
+        If True, the user will be prompted for input.
+    crop : bool
+        If True, the image will be cropped.
+    invert : bool
+        If True, the image will be inverted.
+    """
+
+    DEFAULT_CONFIG = {
+        "name": "crop",
+        "interactive": False,
+    }
+
     def __init__(self, directory=None, config=None, name=None, verbose=False):
-        super().__init__(directory=directory)
+        super().__init__(directory=directory, config=config, name=name, verbose=verbose)
+        if config is None:
+            config = CropStep.DEFAULT_CONFIG
         self.set_input_ext("fits")
         self.set_output_ext("fits")
         self.set_output_tag("crop")

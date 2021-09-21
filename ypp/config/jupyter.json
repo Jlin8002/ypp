@@ -1,0 +1,23 @@
+{
+	"steps": [
+		{
+			"name": "crop",
+			"interactive": false,
+			"crop": false,
+			"invert": false
+		},
+		{
+			"name": "astrometry",
+			"api_key": null
+		},
+		{
+			"name": "sextract"
+		},
+		{
+			"name": "match"
+		},
+		{
+			"name": "calibrate"
+		}
+	]
+}

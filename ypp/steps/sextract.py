@@ -1,14 +1,47 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
 import sep
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 
+from ypp.pipeline.step import Step
+
+
+class SextractStep(Step):
+    """A pipeline step used to crop and invert an image before processing.
+
+    Config parameters:
+    ----------
+    name : str
+        The name of the step to be used in the config file.
+    interactive : bool
+        If True, the user will be prompted for input.
+    crop : bool
+        If True, the image will be cropped.
+    invert : bool
+        If True, the image will be inverted.
+    """
+
+    DEFAULT_CONFIG = {
+        "name": "match",
+        "interactive": False,
+        "objects": None,
+        "catalog": None,
+    }
+
+    def __init__(self, directory=None, config=None, name=None, verbose=False):
+        super().__init__(directory=directory, config=config, name=name, verbose=verbose)
+        self.set_input_ext("fits")
+        self.set_output_ext("csv")
+        self.set_output_tag("sextract")
+
+    def process_data(self):
+        wcs = WCS(self.get_input_data().header)
+
 
 def sextract_bkg(data):
-    data = data.astype("float")
+    data = data.astype(float)
     bkg = sep.Background(data)
     data = data - bkg
     return data, bkg
@@ -87,31 +120,3 @@ def sextract_magnitudes(
 #     overwrite=True,
 # )
 
-
-def plot_objects(image, objects):
-
-    # plot background-subtracted image
-    fig, ax = plt.subplots(figsize=(12, 12))
-    m, s = np.mean(image), np.std(image)
-    im = ax.imshow(
-        image,
-        interpolation="nearest",
-        cmap="gray",
-        vmin=m - s,
-        vmax=m + s,
-        origin="lower",
-    )
-
-    # plot an ellipse for each object
-    for i in range(len(objects)):
-        e = Ellipse(
-            xy=(objects["x"][i], objects["y"][i]),
-            width=6 * objects["a"][i],
-            height=6 * objects["b"][i],
-            angle=objects["theta"][i] * 180.0 / np.pi,
-        )
-        e.set_facecolor("none")
-        e.set_edgecolor("red")
-        ax.add_artist(e)
-
-    plt.show()
