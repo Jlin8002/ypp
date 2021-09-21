@@ -28,6 +28,8 @@ class MatchStep(Step):
 
     def __init__(self, directory=None, config=None, name=None, verbose=False):
         super().__init__(directory=directory, config=config, name=name, verbose=verbose)
+        if config is None:
+            config = MatchStep.DEFAULT_CONFIG
         self.set_input_ext("csv")
         self.set_output_ext("csv")
         self.set_output_tag("match")

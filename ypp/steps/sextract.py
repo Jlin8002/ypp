@@ -17,21 +17,28 @@ class SextractStep(Step):
         The name of the step to be used in the config file.
     interactive : bool
         If True, the user will be prompted for input.
-    crop : bool
-        If True, the image will be cropped.
-    invert : bool
-        If True, the image will be inverted.
+    units : str
+        The units to be used for the photometry arguments. Can be "pixel" or "arcsecond".
+    aperture : float
+        The radius of the object photometry aperture in the units specified above.
+    buffer : float
+        The radius of the object photometry buffer in the units specified above.
+    background : float
+        The radius of the object photometry background in the units specified above.
     """
 
     DEFAULT_CONFIG = {
         "name": "match",
         "interactive": False,
-        "objects": None,
-        "catalog": None,
+        "aperture": None,
+        "buffer": None,
+        "background": None,
     }
 
     def __init__(self, directory=None, config=None, name=None, verbose=False):
         super().__init__(directory=directory, config=config, name=name, verbose=verbose)
+        if config is None:
+            config = SextractStep.DEFAULT_CONFIG
         self.set_input_ext("fits")
         self.set_output_ext("csv")
         self.set_output_tag("sextract")

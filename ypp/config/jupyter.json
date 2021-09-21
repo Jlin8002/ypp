@@ -8,13 +8,22 @@
 		},
 		{
 			"name": "astrometry",
-			"api_key": null
+			"interactive": false,
+			"api-key": null
 		},
 		{
-			"name": "sextract"
+			"name": "sextract",
+			"interactive": false,
+			"units": "pixel",
+			"aperture": null,
+			"buffer": null,
+			"background": null
 		},
 		{
-			"name": "match"
+			"name": "match",
+			"interactive": false,
+			"objects": false,
+			"catalog": false
 		},
 		{
 			"name": "calibrate"

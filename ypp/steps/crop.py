@@ -25,6 +25,8 @@ class CropStep(Step):
     DEFAULT_CONFIG = {
         "name": "crop",
         "interactive": False,
+        "crop": False,
+        "invert": False,
     }
 
     def __init__(self, directory=None, config=None, name=None, verbose=False):
