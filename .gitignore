@@ -3,3 +3,4 @@ __pycache__
 .vscode
 /data/*.fits
 /data/*.fit
+.DS_Store
