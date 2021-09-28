@@ -81,11 +81,11 @@ class Step(object):
 
     def write_data(self, filename):
         if self.output_file_ext == "fits" or self.output_file_ext == "fit":
-            self.write_fits_file()
+            self.write_fits_file(filename)
         elif self.output_file_ext == "tif" or self.output_file_ext == "tiff":
-            self.write_tiff_file()
+            self.write_tiff_file(filename)
         elif self.output_file_ext == "csv":
-            self.write_csv_file()
+            self.write_csv_file(filename)
         else:
             raise NameError("Unrecognized file extension.")
 

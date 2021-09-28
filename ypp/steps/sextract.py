@@ -30,6 +30,7 @@ class SextractStep(Step):
     DEFAULT_CONFIG = {
         "name": "match",
         "interactive": False,
+        "units": "arcsecond",
         "aperture": None,
         "buffer": None,
         "background": None,
